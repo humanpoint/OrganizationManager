@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus } from "lucide-react";
@@ -74,81 +75,87 @@ export default function SuperAdminDashboard() {
               Add Organization
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>Add New Organization</DialogTitle>
             </DialogHeader>
-            <form onSubmit={form.handleSubmit((data) => createOrgMutation.mutate(data))} className="space-y-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Organization Details</h3>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="organization.name">Organization Name</Label>
-                    <Input {...form.register("organization.name")} />
+            <form onSubmit={form.handleSubmit((data) => createOrgMutation.mutate(data))}>
+              <ScrollArea className="max-h-[70vh] pr-6">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Organization Details</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="organization.name">Organization Name</Label>
+                        <Input {...form.register("organization.name")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="organization.address">Address</Label>
+                        <Input {...form.register("organization.address")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="organization.primaryContactName">Primary Contact Name</Label>
+                        <Input {...form.register("organization.primaryContactName")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="organization.primaryContactNumber">Primary Contact Number</Label>
+                        <Input {...form.register("organization.primaryContactNumber")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="organization.designation">Designation</Label>
+                        <Input {...form.register("organization.designation")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="organization.primaryEmail">Primary Email</Label>
+                        <Input type="email" {...form.register("organization.primaryEmail")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="organization.primaryPhone">Primary Phone</Label>
+                        <Input {...form.register("organization.primaryPhone")} />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="organization.address">Address</Label>
-                    <Input {...form.register("organization.address")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="organization.primaryContactName">Primary Contact Name</Label>
-                    <Input {...form.register("organization.primaryContactName")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="organization.primaryContactNumber">Primary Contact Number</Label>
-                    <Input {...form.register("organization.primaryContactNumber")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="organization.designation">Designation</Label>
-                    <Input {...form.register("organization.designation")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="organization.primaryEmail">Primary Email</Label>
-                    <Input type="email" {...form.register("organization.primaryEmail")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="organization.primaryPhone">Primary Phone</Label>
-                    <Input {...form.register("organization.primaryPhone")} />
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Admin User Details</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="admin.username">Username</Label>
+                        <Input {...form.register("admin.username")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="admin.email">Email</Label>
+                        <Input type="email" {...form.register("admin.email")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="admin.password">Password</Label>
+                        <Input type="password" {...form.register("admin.password")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="admin.designation">Designation</Label>
+                        <Input {...form.register("admin.designation")} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="admin.contactNumber">Contact Number</Label>
+                        <Input {...form.register("admin.contactNumber")} />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ScrollArea>
 
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Admin User Details</h3>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="admin.username">Username</Label>
-                    <Input {...form.register("admin.username")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="admin.email">Email</Label>
-                    <Input type="email" {...form.register("admin.email")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="admin.password">Password</Label>
-                    <Input type="password" {...form.register("admin.password")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="admin.designation">Designation</Label>
-                    <Input {...form.register("admin.designation")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="admin.contactNumber">Contact Number</Label>
-                    <Input {...form.register("admin.contactNumber")} />
-                  </div>
-                </div>
+              <div className="mt-6">
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={createOrgMutation.isPending}
+                >
+                  {createOrgMutation.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Create Organization with Admin
+                </Button>
               </div>
-
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={createOrgMutation.isPending}
-              >
-                {createOrgMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Create Organization with Admin
-              </Button>
             </form>
           </DialogContent>
         </Dialog>
