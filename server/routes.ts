@@ -4,7 +4,7 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertOrgSchema, insertUserSchema } from "@shared/schema";
 import { z } from "zod";
-import { db } from "./db";
+import { log } from "./vite";
 
 // Combined schema for organization and admin creation
 const createOrgWithAdminSchema = z.object({
@@ -31,22 +31,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { organization, admin } = parseResult.data;
 
-      // Create organization and admin user in a transaction
-      const result = await db.transaction(async (tx) => {
-        const [org] = await storage.createOrganization(organization);
-
-        // Create admin user for the organization
-        const [adminUser] = await storage.createUser({
-          ...admin,
-          organizationId: org.id,
-        });
-
-        return { org, adminUser };
+      // Create organization and admin user
+      const org = await storage.createOrganization(organization);
+      const adminUser = await storage.createUser({
+        ...admin,
+        organizationId: org.id,
       });
 
-      res.status(201).json(result);
+      res.status(201).json({ org, adminUser });
     } catch (error) {
-      console.error("Failed to create organization with admin:", error);
+      log("Failed to create organization with admin:" + error);
       res.status(500).json({ message: "Failed to create organization with admin" });
     }
   });
@@ -56,8 +50,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.sendStatus(403);
     }
 
-    const orgs = await storage.listOrganizations();
-    res.json(orgs);
+    try {
+      const orgs = await storage.listOrganizations();
+      res.json(orgs);
+    } catch (error) {
+      log("Failed to list organizations:" + error);
+      res.status(500).json({ message: "Failed to list organizations" });
+    }
   });
 
   // Customers
@@ -86,6 +85,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     const sites = await storage.listSitesByCustomer(customerId);
     res.json(sites);
+  });
+
+  // Debug route
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok" });
   });
 
   const httpServer = createServer(app);
