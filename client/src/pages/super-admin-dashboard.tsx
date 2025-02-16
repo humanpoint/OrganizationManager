@@ -75,79 +75,80 @@ export default function SuperAdminDashboard() {
               Add Organization
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-2xl max-h-[90vh] p-0">
-            <DialogHeader className="p-6 pb-0">
+          <DialogContent className="sm:max-w-2xl max-h-[90vh]">
+            <DialogHeader className="pb-4">
               <DialogTitle>Add New Organization</DialogTitle>
             </DialogHeader>
             <form onSubmit={form.handleSubmit((data) => createOrgMutation.mutate(data))}>
-              <ScrollArea className="px-6 pb-0 max-h-[calc(90vh-8rem)]">
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Organization Details</h3>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="organization.name">Organization Name</Label>
-                        <Input {...form.register("organization.name")} />
+              <div className="relative max-h-[calc(90vh-10rem)] overflow-hidden">
+                <ScrollArea className="h-full pr-4">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">Organization Details</h3>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="organization.name">Organization Name</Label>
+                          <Input {...form.register("organization.name")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="organization.address">Address</Label>
+                          <Input {...form.register("organization.address")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="organization.primaryContactName">Primary Contact Name</Label>
+                          <Input {...form.register("organization.primaryContactName")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="organization.primaryContactNumber">Primary Contact Number</Label>
+                          <Input {...form.register("organization.primaryContactNumber")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="organization.designation">Designation</Label>
+                          <Input {...form.register("organization.designation")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="organization.primaryEmail">Primary Email</Label>
+                          <Input type="email" {...form.register("organization.primaryEmail")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="organization.primaryPhone">Primary Phone</Label>
+                          <Input {...form.register("organization.primaryPhone")} />
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="organization.address">Address</Label>
-                        <Input {...form.register("organization.address")} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="organization.primaryContactName">Primary Contact Name</Label>
-                        <Input {...form.register("organization.primaryContactName")} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="organization.primaryContactNumber">Primary Contact Number</Label>
-                        <Input {...form.register("organization.primaryContactNumber")} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="organization.designation">Designation</Label>
-                        <Input {...form.register("organization.designation")} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="organization.primaryEmail">Primary Email</Label>
-                        <Input type="email" {...form.register("organization.primaryEmail")} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="organization.primaryPhone">Primary Phone</Label>
-                        <Input {...form.register("organization.primaryPhone")} />
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">Admin User Details</h3>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="admin.username">Username</Label>
+                          <Input {...form.register("admin.username")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="admin.email">Email</Label>
+                          <Input type="email" {...form.register("admin.email")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="admin.password">Password</Label>
+                          <Input type="password" {...form.register("admin.password")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="admin.designation">Designation</Label>
+                          <Input {...form.register("admin.designation")} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="admin.contactNumber">Contact Number</Label>
+                          <Input {...form.register("admin.contactNumber")} />
+                        </div>
                       </div>
                     </div>
                   </div>
+                </ScrollArea>
+              </div>
 
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Admin User Details</h3>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="admin.username">Username</Label>
-                        <Input {...form.register("admin.username")} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="admin.email">Email</Label>
-                        <Input type="email" {...form.register("admin.email")} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="admin.password">Password</Label>
-                        <Input type="password" {...form.register("admin.password")} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="admin.designation">Designation</Label>
-                        <Input {...form.register("admin.designation")} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="admin.contactNumber">Contact Number</Label>
-                        <Input {...form.register("admin.contactNumber")} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </ScrollArea>
-
-              <div className="p-6 border-t mt-6">
+              <div className="flex justify-end mt-6 pt-4 border-t">
                 <Button 
                   type="submit" 
-                  className="w-full"
                   disabled={createOrgMutation.isPending}
                 >
                   {createOrgMutation.isPending && (
