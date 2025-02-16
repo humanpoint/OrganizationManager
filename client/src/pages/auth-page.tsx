@@ -22,7 +22,7 @@ export default function AuthPage() {
   const registerForm = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
-      role: "admin", // Default role for new registrations
+      role: "employee", // Changed from 'admin' to 'employee' for regular registrations
     }
   });
 
@@ -94,7 +94,7 @@ export default function AuthPage() {
                       {registerMutation.isPending && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       )}
-                      Register
+                      Register as Employee
                     </Button>
                   </div>
                 </form>

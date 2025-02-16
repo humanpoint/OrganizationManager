@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Organization, insertOrgSchema } from "@shared/schema";
+import { Organization, insertOrgSchema, insertUserSchema } from "@shared/schema";
 import DashboardShell from "@/components/layout/dashboard-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -10,18 +10,34 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { z } from "zod";
+
+// Combined schema for organization and admin creation
+const createOrgWithAdminSchema = z.object({
+  organization: insertOrgSchema,
+  admin: insertUserSchema.extend({
+    role: z.literal("admin"),
+  }),
+});
+
+type CreateOrgWithAdmin = z.infer<typeof createOrgWithAdminSchema>;
 
 export default function SuperAdminDashboard() {
   const { data: organizations, isLoading } = useQuery<Organization[]>({
     queryKey: ["/api/organizations"],
   });
 
-  const form = useForm({
-    resolver: zodResolver(insertOrgSchema),
+  const form = useForm<CreateOrgWithAdmin>({
+    resolver: zodResolver(createOrgWithAdminSchema),
+    defaultValues: {
+      admin: {
+        role: "admin",
+      },
+    },
   });
 
   const createOrgMutation = useMutation({
-    mutationFn: async (data: Organization) => {
+    mutationFn: async (data: CreateOrgWithAdmin) => {
       const res = await apiRequest("POST", "/api/organizations", data);
       return res.json();
     },
@@ -58,39 +74,71 @@ export default function SuperAdminDashboard() {
               Add Organization
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Add New Organization</DialogTitle>
             </DialogHeader>
-            <form onSubmit={form.handleSubmit((data) => createOrgMutation.mutate(data))} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Organization Name</Label>
-                <Input {...form.register("name")} />
+            <form onSubmit={form.handleSubmit((data) => createOrgMutation.mutate(data))} className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Organization Details</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="organization.name">Organization Name</Label>
+                    <Input {...form.register("organization.name")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="organization.address">Address</Label>
+                    <Input {...form.register("organization.address")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="organization.primaryContactName">Primary Contact Name</Label>
+                    <Input {...form.register("organization.primaryContactName")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="organization.primaryContactNumber">Primary Contact Number</Label>
+                    <Input {...form.register("organization.primaryContactNumber")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="organization.designation">Designation</Label>
+                    <Input {...form.register("organization.designation")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="organization.primaryEmail">Primary Email</Label>
+                    <Input type="email" {...form.register("organization.primaryEmail")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="organization.primaryPhone">Primary Phone</Label>
+                    <Input {...form.register("organization.primaryPhone")} />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Input {...form.register("address")} />
+
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Admin User Details</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="admin.username">Username</Label>
+                    <Input {...form.register("admin.username")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="admin.email">Email</Label>
+                    <Input type="email" {...form.register("admin.email")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="admin.password">Password</Label>
+                    <Input type="password" {...form.register("admin.password")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="admin.designation">Designation</Label>
+                    <Input {...form.register("admin.designation")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="admin.contactNumber">Contact Number</Label>
+                    <Input {...form.register("admin.contactNumber")} />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="primaryContactName">Primary Contact Name</Label>
-                <Input {...form.register("primaryContactName")} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="primaryContactNumber">Primary Contact Number</Label>
-                <Input {...form.register("primaryContactNumber")} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="designation">Designation</Label>
-                <Input {...form.register("designation")} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="primaryEmail">Primary Email</Label>
-                <Input type="email" {...form.register("primaryEmail")} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="primaryPhone">Primary Phone</Label>
-                <Input {...form.register("primaryPhone")} />
-              </div>
+
               <Button 
                 type="submit" 
                 className="w-full"
@@ -99,7 +147,7 @@ export default function SuperAdminDashboard() {
                 {createOrgMutation.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Create Organization
+                Create Organization with Admin
               </Button>
             </form>
           </DialogContent>
