@@ -75,12 +75,12 @@ export default function SuperAdminDashboard() {
               Add Organization
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-2xl">
-            <DialogHeader>
+          <DialogContent className="sm:max-w-2xl max-h-[90vh] p-0">
+            <DialogHeader className="p-6 pb-0">
               <DialogTitle>Add New Organization</DialogTitle>
             </DialogHeader>
             <form onSubmit={form.handleSubmit((data) => createOrgMutation.mutate(data))}>
-              <ScrollArea className="max-h-[70vh] pr-6">
+              <ScrollArea className="px-6 pb-0 max-h-[calc(90vh-8rem)]">
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-lg font-semibold mb-4">Organization Details</h3>
@@ -144,7 +144,7 @@ export default function SuperAdminDashboard() {
                 </div>
               </ScrollArea>
 
-              <div className="mt-6">
+              <div className="p-6 border-t mt-6">
                 <Button 
                   type="submit" 
                   className="w-full"
