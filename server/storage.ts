@@ -4,126 +4,86 @@ import {
   SiteContact, Vendor, Item, Unit,
   InsertUser, InsertOrganization, InsertCustomer,
   InsertConstructionSite, InsertSiteContact, InsertVendor,
-  InsertItem, InsertUnit
+  InsertItem, InsertUnit,
+  users, organizations, customers, constructionSites,
+  siteContacts, vendors, items, units
 } from "@shared/schema";
-import createMemoryStore from "memorystore";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
-const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private organizations: Map<number, Organization>;
-  private customers: Map<number, Customer>;
-  private sites: Map<number, ConstructionSite>;
-  private contacts: Map<number, SiteContact>;
-  private vendors: Map<number, Vendor>;
-  private items: Map<number, Item>;
-  private units: Map<number, Unit>;
-  
+export class DatabaseStorage implements IStorage {
   sessionStore: session.SessionStore;
-  private currentId: { [key: string]: number };
 
   constructor() {
-    this.users = new Map();
-    this.organizations = new Map();
-    this.customers = new Map();
-    this.sites = new Map();
-    this.contacts = new Map();
-    this.vendors = new Map();
-    this.items = new Map();
-    this.units = new Map();
-    
-    this.currentId = {
-      users: 1,
-      organizations: 1,
-      customers: 1,
-      sites: 1,
-      contacts: 1,
-      vendors: 1,
-      items: 1,
-      units: 1
-    };
-
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000
-    });
-
-    // Create default superadmin
-    this.createUser({
-      username: "superadmin",
-      password: "password123", // This would be hashed in auth.ts
-      email: "super@admin.com",
-      role: "superadmin",
-      designation: "Super Administrator",
-      contactNumber: "",
-      organizationId: null,
-      department: "Administration"
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true,
     });
   }
 
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const id = this.currentId.users++;
-    const newUser = { ...user, id };
-    this.users.set(id, newUser);
+    const [newUser] = await db.insert(users).values(user).returning();
     return newUser;
   }
 
-  // Organization operations  
+  // Organization operations
   async getOrganization(id: number): Promise<Organization | undefined> {
-    return this.organizations.get(id);
+    const [org] = await db.select().from(organizations).where(eq(organizations.id, id));
+    return org;
   }
 
   async createOrganization(org: InsertOrganization): Promise<Organization> {
-    const id = this.currentId.organizations++;
-    const newOrg = { ...org, id };
-    this.organizations.set(id, newOrg);
+    const [newOrg] = await db.insert(organizations).values(org).returning();
     return newOrg;
   }
 
   async listOrganizations(): Promise<Organization[]> {
-    return Array.from(this.organizations.values());
+    return await db.select().from(organizations);
   }
 
   // Customer operations
   async createCustomer(customer: InsertCustomer): Promise<Customer> {
-    const id = this.currentId.customers++;
-    const newCustomer = { ...customer, id };
-    this.customers.set(id, newCustomer);
+    const [newCustomer] = await db.insert(customers).values(customer).returning();
     return newCustomer;
   }
 
   async listCustomersByOrg(orgId: number): Promise<Customer[]> {
-    return Array.from(this.customers.values())
-      .filter(c => c.organizationId === orgId);
+    return await db
+      .select()
+      .from(customers)
+      .where(eq(customers.organizationId, orgId));
   }
 
   // Construction site operations
   async createSite(site: InsertConstructionSite): Promise<ConstructionSite> {
-    const id = this.currentId.sites++;
-    const newSite = { ...site, id };
-    this.sites.set(id, newSite);
+    const [newSite] = await db.insert(constructionSites).values(site).returning();
     return newSite;
   }
 
   async listSitesByCustomer(customerId: number): Promise<ConstructionSite[]> {
-    return Array.from(this.sites.values())
-      .filter(s => s.customerId === customerId);
+    return await db
+      .select()
+      .from(constructionSites)
+      .where(eq(constructionSites.customerId, customerId));
   }
 
-  // Similar patterns for other entities...
-  // The implementation would continue with CRUD operations for all entities
+  // Additional implementation for other entities...
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
