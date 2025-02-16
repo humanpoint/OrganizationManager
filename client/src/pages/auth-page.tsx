@@ -9,11 +9,17 @@ import { insertUserSchema, type InsertUser } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
 import { Loader2 } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useState } from "react";
 
 type LoginData = Pick<InsertUser, "username" | "password">;
 
+const SUPER_ADMIN_CODE = "SUPER123"; // In production, this would be more secure
+
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
+  const [adminCode, setAdminCode] = useState("");
+  const [showSuperAdminOption, setShowSuperAdminOption] = useState(false);
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(insertUserSchema.pick({ username: true, password: true })),
@@ -22,9 +28,20 @@ export default function AuthPage() {
   const registerForm = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
-      role: "employee", // Changed from 'admin' to 'employee' for regular registrations
+      role: "employee",
     }
   });
+
+  const handleAdminCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const code = e.target.value;
+    setAdminCode(code);
+    setShowSuperAdminOption(code === SUPER_ADMIN_CODE);
+    if (code === SUPER_ADMIN_CODE) {
+      registerForm.setValue("role", "superadmin");
+    } else {
+      registerForm.setValue("role", "employee");
+    }
+  };
 
   if (user) {
     return <Redirect to="/" />;
@@ -86,6 +103,33 @@ export default function AuthPage() {
                       <Label htmlFor="password">Password</Label>
                       <Input type="password" {...registerForm.register("password")} />
                     </div>
+                    <div className="space-y-2">
+                      <Label>Admin Code (Optional)</Label>
+                      <Input 
+                        type="text" 
+                        value={adminCode}
+                        onChange={handleAdminCodeChange}
+                        placeholder="Enter code for superadmin access"
+                      />
+                    </div>
+                    {showSuperAdminOption && (
+                      <div className="space-y-2">
+                        <Label>Role</Label>
+                        <RadioGroup 
+                          defaultValue="superadmin"
+                          onValueChange={(value) => registerForm.setValue("role", value as "superadmin" | "employee")}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="superadmin" id="superadmin" />
+                            <Label htmlFor="superadmin">Super Admin</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="employee" id="employee" />
+                            <Label htmlFor="employee">Employee</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                    )}
                     <Button 
                       type="submit" 
                       className="w-full"
@@ -94,7 +138,7 @@ export default function AuthPage() {
                       {registerMutation.isPending && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       )}
-                      Register as Employee
+                      Register as {showSuperAdminOption ? 'Super Admin' : 'Employee'}
                     </Button>
                   </div>
                 </form>
