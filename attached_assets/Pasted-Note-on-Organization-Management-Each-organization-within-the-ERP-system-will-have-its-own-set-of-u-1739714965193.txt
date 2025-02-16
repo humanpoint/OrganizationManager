@@ -1,0 +1,151 @@
+Note on Organization Management:
+
+Each organization within the ERP system will have its own set of users, customers, vendors, accounts, and other related data. The Organization Management section will include fields to store and manage key details of the organization:
+
+1. Organization Management
+Organization Name
+
+Organization Address
+
+Primary Contact Name
+
+Primary Contact Number
+
+Designation
+
+Primary Email
+
+Primary Phone
+
+The organization will be operated by users with designated roles. Each user will have specific permissions based on their role within the organization, such as admin, manager, or employee. These roles will govern access to various functions, including managing customers, vendors, and accounts within the system.
+
+2. User Management
+A section to manage users within the ERP system, with options to create, edit, and delete user records. Each user will have the following fields:
+
+User Name
+
+Email
+
+Role (e.g., Admin, Manager, Employee, etc.)
+
+Designation
+
+Password (to be securely stored)
+
+Contact Number
+
+Assigned Organization/Department
+
+3. Customer Management
+Add a separate section to manage customers (create, edit, delete). Each customer will have the following fields:
+
+Customer Name
+
+Customer Address
+
+Primary Contact Name
+
+Primary Contact Number
+
+Designation
+
+Primary Email
+
+Primary Phone
+
+Each customer will be associated with one or more construction sites.
+
+4. Construction Site Management
+Add a separate section to manage construction sites (create, edit, delete). Each construction site will have the following fields:
+
+Customer Name (dropdown with search function)
+
+Site Name
+
+Street Name
+
+Area/Locality (dropdown with search function)
+
+City/Emirate (dropdown with search function)
+
+Google Map Location
+
+5. Site Contact Person Management
+Each construction site will be associated with one or more contact persons (create, edit, delete). Each contact person will have the following fields:
+
+Site Contact Person Name
+
+Site Contact Person Number
+
+Designation
+
+Email
+
+Phone
+
+6. Vendor Management
+Add a separate section to manage vendors (create, edit, delete). Each vendor will have the following fields:
+
+Vendor Name
+
+Vendor Address
+
+Primary Contact Name
+
+Primary Contact Number
+
+Designation
+
+Primary Email
+
+Primary Phone
+
+7. Items Management
+Add a separate section to manage items (create, edit, delete). Items will be categorized as either goods or services (radio button).
+
+If Goods is selected, the item will include the following fields:
+
+Item Name
+
+Units
+
+Purchase Unit Price
+
+Sales Unit Price
+
+If Services is selected, the item will allow you to select multiple goods as part of the service and will include the following fields:
+
+Service Name
+
+Associated Goods (select multiple goods)
+
+Units
+
+Purchase Unit Price (for each good)
+
+Sales Unit Price (for each good)
+
+Each item will have different units depending on whether it is a good or a service.
+
+8. Units Management
+Add a separate section to manage units (create, edit, delete). Each unit will have the following field:
+
+Units
+
+9. Purchase Orders Management
+Add a separate section to manage purchase orders (create, edit, clone, delete).
+
+10. Quotation Management
+Add a separate section to manage quotations (create, edit, delete).
+
+11. Invoice Management
+Add a separate section to manage invoices (create, edit, delete).
+
+12. PDF Export
+Generate and download a PDF version of the management sections.
+
+13. Search and Filter
+Add a search bar or filters for all management sections.
+
+14. Dynamic Dashboard
+Create a dashboard with statistics such as total quotations, invoices, payments received, payments paid, customers, and revenue.
